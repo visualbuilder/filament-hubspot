@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Visualbuilder\FilamentHubspot\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class FilamentHubspotCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'filament-hubspot';
 
     public $description = 'My command';
 

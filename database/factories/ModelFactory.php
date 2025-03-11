@@ -1,6 +1,6 @@
 <?php
 
-namespace VendorName\Skeleton\Database\Factories;
+namespace Visualbuilder\FilamentHubspot\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
