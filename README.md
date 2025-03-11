@@ -36,19 +36,26 @@ Optionally, you can publish the views using
 php artisan vendor:publish --tag="filament-hubspot-views"
 ```
 
-This is the contents of the published config file:
-
+## XDEBUG
+When working on local packages to get Xdebug to work, instead of symlinking to the source package, make copies of the files, but then you have to composer update after each package code change.
+Update: I have had this working without symlinking, may have been a misconfiguration.
 ```php
-return [
-];
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../packages/visualbuilder/filament-hubspot",
+            "options": {
+                "symlink": false
+            }
+        }
+    ],
 ```
 
 ## Usage
 
-```php
-$filamentHubspot = new Visualbuilder\FilamentHubspot();
-echo $filamentHubspot->echoPhrase('Hello, Visualbuilder!');
-```
+1. Open Hubspot connection page and authenticate to establish a connection.
+2. 
+
 
 ## Testing
 
