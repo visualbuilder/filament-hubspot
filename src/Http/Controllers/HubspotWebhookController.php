@@ -64,7 +64,7 @@ class HubspotWebhookController extends Controller
             return false;
         }
 
-        // Construct full URI
+        // Construct full URI (exactly as in HubSpot JS example)
         $hostname = $request->getHost();
         $uri = 'https://' . $hostname . $request->getRequestUri();
 
@@ -81,4 +81,13 @@ class HubspotWebhookController extends Controller
         return hash_equals($signatureHeader, $hashedString);
     }
 
+
+    protected function hubspotDecodeUri(string $uri): string
+    {
+        return str_replace(
+            ['%3A', '%2F', '%3F', '%40', '%21', '%24', '%27', '%28', '%29', '%2A', '%2C', '%3B'],
+            [':', '/', '?', '@', '!', '$', "'", '(', ')', '*', ',', ';'],
+            $uri
+        );
+    }
 }
