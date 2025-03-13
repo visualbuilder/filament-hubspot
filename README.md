@@ -1,9 +1,9 @@
 # Syncs leads from HubSpot
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/visual-builder/filament-hubspot.svg?style=flat-square)](https://packagist.org/packages/visual-builder/filament-hubspot)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/visual-builder/filament-hubspot/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/visual-builder/filament-hubspot/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/visual-builder/filament-hubspot/fix-php-code-styling.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/visual-builder/filament-hubspot/actions?query=workflow%3A"Fix+PHP+code+styling"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/visual-builder/filament-hubspot.svg?style=flat-square)](https://packagist.org/packages/visual-builder/filament-hubspot)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/visualbuilder/filament-hubspot.svg?style=flat-square)](https://packagist.org/packages/visualbuilder/filament-hubspot)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/visualbuilder/filament-hubspot/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/visualbuilder/filament-hubspot/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/visualbuilder/filament-hubspot/fix-php-code-styling.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/visualbuilder/filament-hubspot/actions?query=workflow%3A"Fix+PHP+code+styling"+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/visualbuilder/filament-hubspot.svg?style=flat-square)](https://packagist.org/packages/visualbuilder/filament-hubspot)
 
 
 
@@ -14,7 +14,7 @@ This is where your description should go. Limit it to a paragraph or two. Consid
 You can install the package via composer:
 
 ```bash
-composer require visual-builder/filament-hubspot
+composer require visualbuilder/filament-hubspot
 ```
 
 You can publish and run the migrations with:
@@ -45,7 +45,7 @@ Update: I have had this working without symlinking, may have been a misconfigura
             "type": "path",
             "url": "../packages/visualbuilder/filament-hubspot",
             "options": {
-                "symlink": false
+                "symlink": true
             }
         }
     ],

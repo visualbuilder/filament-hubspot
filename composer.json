@@ -1,15 +1,15 @@
 {
-    "name": "visual-builder/filament-hubspot",
+    "name": "visualbuilder/filament-hubspot",
     "description": "Syncs leads from HubSpot",
     "keywords": [
         "Visual Builder",
         "laravel",
         "filament-hubspot"
     ],
-    "homepage": "https://github.com/visual-builder/filament-hubspot",
+    "homepage": "https://github.com/visualbuilder/filament-hubspot",
     "support": {
-        "issues": "https://github.com/visual-builder/filament-hubspot/issues",
-        "source": "https://github.com/visual-builder/filament-hubspot"
+        "issues": "https://github.com/visualbuilder/filament-hubspot/issues",
+        "source": "https://github.com/visualbuilder/filament-hubspot"
     },
     "license": "MIT",
     "authors": [
@@ -22,6 +22,7 @@
     "require": {
         "php": "^8.1",
         "filament/filament": "^3.0",
+        "hubspot/api-client": "^12.0",
         "spatie/laravel-package-tools": "^1.15.0"
     },
     "require-dev": {
@@ -57,10 +58,11 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Visualbuilder\\FilamentHubspot\\FilamentHubspotServiceProvider"
+                "Visualbuilder\\FilamentHubspot\\FilamentHubspotServiceProvider",
+                "Visualbuilder\\FilamentHubspot\\Providers\\HubspotApiServiceProvider"
             ],
             "aliases": {
-                "FilamentHubspot": "Visualbuilder\\FilamentHubspot\\Facades\\FilamentHubspot"
+                "Hubspot": "Visualbuilder\\FilamentHubspot\\Facades\\Hubspot"
             }
         }
     },

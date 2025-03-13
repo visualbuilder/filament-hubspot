@@ -9,11 +9,14 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Route;
 use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Visualbuilder\FilamentHubspot\Commands\FilamentHubspotCommand;
+use Visualbuilder\FilamentHubspot\Http\Controllers\HubspotWebhookController;
+use Visualbuilder\FilamentHubspot\Providers\HubspotApiServiceProvider;
 use Visualbuilder\FilamentHubspot\Testing\TestsFilamentHubspot;
 
 class FilamentHubspotServiceProvider extends PackageServiceProvider
@@ -36,7 +39,7 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
                     ->publishConfigFile()
                     ->publishMigrations()
                     ->askToRunMigrations()
-                    ->askToStarRepoOnGitHub('visual-builder/filament-hubspot');
+                    ->askToStarRepoOnGitHub('visualbuilder/filament-hubspot');
             });
 
         $configFileName = $package->shortName();
@@ -58,7 +61,10 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
         }
     }
 
-    public function packageRegistered(): void {}
+    public function packageRegistered(): void
+    {
+        $this->app->register(HubspotApiServiceProvider::class);
+    }
 
     public function packageBooted(): void
     {
@@ -85,13 +91,25 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
             }
         }
 
+        if (config('hubspot.webhook.enabled', true)) {
+            $this->registerWebhookRoute();
+        }
+
         // Testing
         Testable::mixin(new TestsFilamentHubspot);
     }
 
+    protected function registerWebhookRoute(): void
+    {
+        $slug = config('hubspot.webhook.slug', 'api/hubspot/webhook');
+        Route::post($slug, HubspotWebhookController::class)
+            ->name('filament-hubspot.webhook');
+    }
+
+
     protected function getAssetPackageName(): ?string
     {
-        return 'visual-builder/filament-hubspot';
+        return 'visualbuilder/filament-hubspot';
     }
 
     /**
@@ -101,8 +119,8 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
     {
         return [
             // AlpineComponent::make('filament-hubspot', __DIR__ . '/../resources/dist/components/filament-hubspot.js'),
-            Css::make('filament-hubspot-styles', __DIR__ . '/../resources/dist/filament-hubspot.css'),
-            Js::make('filament-hubspot-scripts', __DIR__ . '/../resources/dist/filament-hubspot.js'),
+//            Css::make('filament-hubspot-styles', __DIR__ . '/../resources/dist/filament-hubspot.css'),
+//            Js::make('filament-hubspot-scripts', __DIR__ . '/../resources/dist/filament-hubspot.js'),
         ];
     }
 

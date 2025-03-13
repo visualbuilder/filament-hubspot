@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @see \Visualbuilder\FilamentHubspot\FilamentHubspot
  */
-class FilamentHubspot extends Facade
+class Hubspot extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \Visualbuilder\FilamentHubspot\FilamentHubspot::class;
+        return \HubSpot\Discovery\Discovery::class;
     }
 }
