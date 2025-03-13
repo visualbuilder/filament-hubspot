@@ -24,6 +24,8 @@ return [
     */
     'private_app_token' => env('HUBSPOT_PRIVATE_APP_TOKEN'),
 
+    'client_secret' => env('HUBSPOT_CLIENT_SECRET'),
+
     /*
     |--------------------------------------------------------------------------
     | Guzzle Client Options
