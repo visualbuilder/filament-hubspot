@@ -14,7 +14,7 @@ class HubspotWebhookService
             $response = HubSpot::crm()
                 ->contacts()
                 ->basicApi()
-                ->getById($contactId, array_keys($this->propertyMapping()));
+                ->getById($contactId, array_keys(config('filament-hubspot.mappings')));
 
             $hubspotProperties = $response->getProperties();
 
@@ -38,31 +38,12 @@ class HubspotWebhookService
         }
     }
 
-    protected function propertyMapping(): array
-    {
-        return [
-            'firstname'        => 'first_name',
-            'lastname'         => 'last_name',
-            'email'            => 'email',
-            'company'          => 'company',
-            'website'          => 'website',
-            'jobtitle'         => 'job_title',
-            'message'          => 'message',
-            //'leadsource'       => 'leadSource',
-            //'hs_object_source_label' => 'leadSourceLookup',
-//            'createdate'       => 'created_at',
-            'lastmodifieddate' => 'updated_at',
-            'lifecyclestage'   => null,//"Marketing Qualified Lead"
-            'hs_object_id'     => null,
-        ];
-    }
-
     protected function transformProperties(array $hubspotProperties): array
     {
-        $mapping = $this->propertyMapping();
+
         $attributes = [];
 
-        foreach ($mapping as $hubspotKey => $modelKey) {
+        foreach (config('filament-hubspot.mappings') as $hubspotKey => $modelKey) {
             $attributes[$modelKey = $mapping[$hubspotKey] ?? $hubspotKey] = $hubspotProperties[$hubspotKey] ?? null;
         }
 

@@ -39,6 +39,38 @@ Testing the connection.  The HubSpot API should now be available on the HubSpot 
 ```
 
 
+## Webhook testing
+
+default webhook url is /api/hubspot/webhook
+
+For local testing of webhooks use ngrok or smee to route requests to your local server
+```bash
+ ngrok http localhost:80
+```
+
+Which should provide the url which can be used in HubSpot:-
+```bash
+Forwarding  https://a5ed-18-170-5-16.ngrok-free.app -> http://localhost:80
+```
+
+Paste this URL into the Hubspot App webhooks section and define your events to trigger call.  On this page you can send a test webhook.
+
+Ngrok should output something like
+```bash
+05:20:45.763 GMT POST /api/hubspot/webhook      200 OK
+```
+This indicates the POST has been received and validated
+
+If you are getting 401 Unauthorized, check the keys and your server time.  Valid requests must be within 5 minutes so clocks must be synched.
+
+### Synching a local model
+
+Check the config file to define the model to be synched and review webhook service provider.  The default provider should work for basic models but if you require custom functionality just create 
+your own service provider and link it here
+
+```php
+
+```
 
 
 ## XDEBUG
