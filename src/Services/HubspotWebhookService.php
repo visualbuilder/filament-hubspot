@@ -5,7 +5,6 @@ namespace Visualbuilder\FilamentHubspot\Services;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Visualbuilder\FilamentHubspot\Facades\HubSpot;
-
 use Illuminate\Support\Facades\DB;
 
 class HubspotWebhookService
