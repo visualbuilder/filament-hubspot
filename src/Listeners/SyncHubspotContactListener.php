@@ -1,4 +1,5 @@
 <?php
+
 namespace Visualbuilder\FilamentHubspot\Listeners;
 
 use Illuminate\Database\Eloquent\Model;
@@ -6,7 +7,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Visualbuilder\FilamentHubspot\Events\HubspotWebhookReceived;
 use Visualbuilder\FilamentHubspot\Facades\Hubspot;
-
 
 class SyncHubspotContactListener
 {
@@ -63,8 +63,8 @@ class SyncHubspotContactListener
         $model = app(config('filament-hubspot.webhook.local_contact_model'));
 
         return collect(config('filament-hubspot.mappings'))
-            ->mapWithKeys(fn($map, $hubspotKey) => $this->mapProperty($model, $hubspotProperties, $hubspotKey, $map))
-            ->filter(fn($value) => !is_null($value))
+            ->mapWithKeys(fn ($map, $hubspotKey) => $this->mapProperty($model, $hubspotProperties, $hubspotKey, $map))
+            ->filter(fn ($value) => !is_null($value))
             ->toArray();
     }
 

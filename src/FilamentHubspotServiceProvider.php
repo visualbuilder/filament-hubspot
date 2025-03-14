@@ -72,7 +72,7 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
         }
 
 
-         // Handle Stubs
+        // Handle Stubs
         if (app()->runningInConsole()) {
             foreach (app(Filesystem::class)->files(__DIR__ . '/../stubs/') as $file) {
                 $this->publishes([
@@ -86,7 +86,7 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
         }
 
         // Testing
-        Testable::mixin(new TestsFilamentHubspot);
+        Testable::mixin(new TestsFilamentHubspot());
     }
 
     protected function registerWebhookRoute(): void

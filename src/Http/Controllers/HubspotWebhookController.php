@@ -52,21 +52,21 @@ class HubspotWebhookController extends Controller
         /**
          * This works in testing but not in production
          */
-//        // Construct full URI (exactly as in HubSpot JS example)
-//        $hostname = $request->getHost();
-//        $uri = 'https://' . $hostname . $request->getRequestUri();
-//
-//        // Body must be JSON-encoded exactly as HubSpot sends it
-//        $body = json_encode($request->json()->all(), JSON_UNESCAPED_SLASHES);
-//
-//        // Concatenate method, URI, body, and timestamp exactly
-//        $sourceString = $request->method() . $uri . $body . $timestamp;
-//
-//        // Compute signature
-//        $hashedString = base64_encode(hash_hmac('sha256', $sourceString, $clientSecret, true));
-//
-//        // Timing-safe comparison
-//        return hash_equals($signatureHeader, $hashedString);
+        //        // Construct full URI (exactly as in HubSpot JS example)
+        //        $hostname = $request->getHost();
+        //        $uri = 'https://' . $hostname . $request->getRequestUri();
+        //
+        //        // Body must be JSON-encoded exactly as HubSpot sends it
+        //        $body = json_encode($request->json()->all(), JSON_UNESCAPED_SLASHES);
+        //
+        //        // Concatenate method, URI, body, and timestamp exactly
+        //        $sourceString = $request->method() . $uri . $body . $timestamp;
+        //
+        //        // Compute signature
+        //        $hashedString = base64_encode(hash_hmac('sha256', $sourceString, $clientSecret, true));
+        //
+        //        // Timing-safe comparison
+        //        return hash_equals($signatureHeader, $hashedString);
     }
 
 

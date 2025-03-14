@@ -9,7 +9,9 @@ use Illuminate\Queue\SerializesModels;
 
 class HubspotWebhookReceived
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
 
     public function __construct(public int|string $contactId, public array $eventData)
