@@ -79,7 +79,7 @@ return [
          * What to do when a webhook is received
          *  Event triggers these Listeners
          */
-        'listeners' => [
+        'listeners'           => [
             Visualbuilder\FilamentHubspot\Events\HubspotWebhookReceived::class => [
                 Visualbuilder\FilamentHubspot\Listeners\SyncHubspotContactListener::class,
                 // Additional listeners can be added here...
@@ -95,24 +95,25 @@ return [
      |  These fields will be requested from hubspot, the values are the model mappings
      |
      */
-    'mappings' => [
-        'firstname' => ['attribute' => 'first_name'],
-        'lastname' => ['attribute' => 'last_name'],
-        'email' => ['attribute' => 'email'],
-        'company' => ['attribute' => 'company'],
-        'website' => ['attribute' => 'website'],
-        'jobtitle' => ['attribute' => 'job_title'],
-        'message' => ['attribute' => 'message'],
+    'mappings'          => [
+        'firstname'        => ['attribute' => 'first_name'],
+        'lastname'         => ['attribute' => 'last_name'],
+        'email'            => ['attribute' => 'email'],
+        'company'          => ['attribute' => 'company'],
+        'website'          => ['attribute' => 'website'],
+        'jobtitle'         => ['attribute' => 'job_title'],
+        'message'          => ['attribute' => 'message'],
         'lastmodifieddate' => ['attribute' => 'updated_at'],
-        'lifecyclestage' => ['attribute' => null],
-        'hs_object_id' => ['attribute' => 'hs_id'],
+        'lifecyclestage'   => ['attribute' => null],
+        'hs_object_id'     => ['attribute' => 'hs_id'],
 
         // Relations can be added and auto created if not existing
-        'leadsource' => [
-            'relation' => 'leadSource',
-            'lookup_field' => 'name', // the column to find or create related model
-            'foreign_key' => 'lead_source_id', // optional, otherwise inferred automatically
-            'not_found_action' => 'create',   // use create or ignore
+        // in this case leadsource may contain LinkedIn, Facebook etc as a string and will populate a related model if the source is not found
+        'leadsource'       => [
+            'relation'         => 'leadSource',
+            'lookup_field'     => 'name',           // the column to find or create related model
+            'foreign_key'      => 'lead_source_id', // optional, otherwise inferred automatically
+            'not_found_action' => 'create',         // use ignore or create missing lookup relation
         ],
     ],
 
