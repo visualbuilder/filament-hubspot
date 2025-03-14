@@ -2,19 +2,15 @@
 
 namespace Visualbuilder\FilamentHubspot;
 
-use Filament\Support\Assets\AlpineComponent;
-use Filament\Support\Assets\Asset;
-use Filament\Support\Assets\Css;
-use Filament\Support\Assets\Js;
-use Filament\Support\Facades\FilamentAsset;
-use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Visualbuilder\FilamentHubspot\Commands\FilamentHubspotCommand;
+use Visualbuilder\FilamentHubspot\Events\HubspotWebhookReceived;
 use Visualbuilder\FilamentHubspot\Http\Controllers\HubspotWebhookController;
 use Visualbuilder\FilamentHubspot\Providers\HubspotApiServiceProvider;
 use Visualbuilder\FilamentHubspot\Testing\TestsFilamentHubspot;
@@ -68,21 +64,15 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        // Asset Registration
-        FilamentAsset::register(
-            $this->getAssets(),
-            $this->getAssetPackageName()
-        );
+        //Init user defined listeners
+        foreach (config('filament-hubspot.webhook.listeners', []) as $event => $eventListeners) {
+            foreach ((array) $eventListeners as $listener) {
+                Event::listen($event, $listener);
+            }
+        }
 
-        FilamentAsset::registerScriptData(
-            $this->getScriptData(),
-            $this->getAssetPackageName()
-        );
 
-        // Icon Registration
-        FilamentIcon::register($this->getIcons());
-
-        // Handle Stubs
+         // Handle Stubs
         if (app()->runningInConsole()) {
             foreach (app(Filesystem::class)->files(__DIR__ . '/../stubs/') as $file) {
                 $this->publishes([
@@ -113,18 +103,6 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
     }
 
     /**
-     * @return array<Asset>
-     */
-    protected function getAssets(): array
-    {
-        return [
-            // AlpineComponent::make('filament-hubspot', __DIR__ . '/../resources/dist/components/filament-hubspot.js'),
-//            Css::make('filament-hubspot-styles', __DIR__ . '/../resources/dist/filament-hubspot.css'),
-//            Js::make('filament-hubspot-scripts', __DIR__ . '/../resources/dist/filament-hubspot.js'),
-        ];
-    }
-
-    /**
      * @return array<class-string>
      */
     protected function getCommands(): array
@@ -134,29 +112,6 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
         ];
     }
 
-    /**
-     * @return array<string>
-     */
-    protected function getIcons(): array
-    {
-        return [];
-    }
-
-    /**
-     * @return array<string>
-     */
-    protected function getRoutes(): array
-    {
-        return [];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    protected function getScriptData(): array
-    {
-        return [];
-    }
 
     /**
      * @return array<string>
@@ -164,7 +119,7 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
     protected function getMigrations(): array
     {
         return [
-            'create_filament-hubspot_table',
+            'create_leads_table',
         ];
     }
 }

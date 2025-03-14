@@ -22,13 +22,6 @@ class HubspotApiServiceProvider extends ServiceProvider
         });
     }
 
-    public function boot(): void
-    {
-//        $this->publishes([
-//            __DIR__.'/../../config/hubspot.php' => config_path('hubspot.php'),
-//        ], 'hubspot-config');
-    }
-
     protected function createHubspotClient(): Discovery
     {
         $handlerStack = \GuzzleHttp\HandlerStack::create();

@@ -21,9 +21,14 @@ You can publish the config file with:
 php artisan vendor:publish --tag="filament-hubspot-config"
 ```
 
+If you wish to use the provided lead model then run the install command to setup the migration
+```bash
+php artisan filament-hubspot:install
+```
+
 Obtain your HobSpot keys under Settings > Account management > Integrations > Connected Apps or Private Apps
 
-Update the env file:-
+Update your env file:-
 
 ```bash
 HUBSPOT_ACCESS_TOKEN=pat-eu1-xxxxx
@@ -41,7 +46,7 @@ Testing the connection.  The HubSpot API should now be available on the HubSpot 
 
 ## Webhook testing
 
-default webhook url is /api/hubspot/webhook
+default webhook url is ```/api/hubspot/webhook```
 
 For local testing of webhooks use ngrok or smee to route requests to your local server
 ```bash
@@ -66,7 +71,7 @@ If you are getting 401 Unauthorized, check the keys and your server time.  Valid
 ### Synching a local model
 
 Check the config file to define the model to be synched and review webhook service provider.  The default provider should work for basic models but if you require custom functionality just create 
-your own service provider and link it here
+your own service provider and replace it in the config
 
 ```php
 

@@ -3,50 +3,84 @@
 namespace Visualbuilder\FilamentHubspot\Services;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Visualbuilder\FilamentHubspot\Facades\HubSpot;
+
+use Illuminate\Support\Facades\DB;
 
 class HubspotWebhookService
 {
     public function syncContact(string|int $contactId): ?Model
     {
-        try {
-            $response = HubSpot::crm()
-                ->contacts()
-                ->basicApi()
-                ->getById($contactId, array_keys(config('filament-hubspot.mappings')));
+        return DB::transaction(function () use ($contactId) {
+            try {
+                $response = HubSpot::crm()
+                    ->contacts()
+                    ->basicApi()
+                    ->getById($contactId, array_keys(config('filament-hubspot.mappings')));
 
-            $hubspotProperties = $response->getProperties();
+                $hubspotProperties = $response->getProperties();
 
-            $leadAttributes = $this->transformProperties($hubspotProperties);
+                $leadAttributes = $this->transformProperties($hubspotProperties);
 
-            Log::info(json_encode($leadAttributes));
+                $model = config('filament-hubspot.webhook.local_contact_model');
 
-            $model = config('filament-hubspot.webhook.local_model');
+                return $model::updateOrCreate(
+                    [config('filament-hubspot.webhook.match_on_attribute.localModel') => $hubspotProperties[config('filament-hubspot.webhook.match_on_attribute.hubspot')]],
+                    $leadAttributes
+                );
+            } catch (\Throwable $e) {
+                \Log::error('HubSpot Sync Error', [
+                    'contact_id' => $contactId,
+                    'error'      => $e->getMessage(),
+                ]);
 
-            return $model::updateOrCreate(
-                ['email' => $leadAttributes['email']],
-                $leadAttributes
-            );
-        } catch (\Throwable $e) {
-            \Log::error('HubSpot Sync Error', [
-                'contact_id' => $contactId,
-                'error'      => $e->getMessage(),
-            ]);
-
-            throw $e;
-        }
+                throw $e; // Transaction will auto-rollback
+            }
+        });
     }
 
     protected function transformProperties(array $hubspotProperties): array
     {
+        $model = app(config('filament-hubspot.webhook.local_contact_model'));
 
-        $attributes = [];
+        return collect(config('filament-hubspot.mappings'))
+            ->mapWithKeys(function ($map, $hubspotKey) use ($hubspotProperties, $model) {
+                if (isset($map['attribute'])) {
+                    return [$map['attribute'] => $hubspotProperties[$hubspotKey] ?? null];
+                }
 
-        foreach (config('filament-hubspot.mappings') as $hubspotKey => $modelKey) {
-            $attributes[$modelKey = $mapping[$hubspotKey] ?? $hubspotKey] = $hubspotProperties[$hubspotKey] ?? null;
+                if (isset($map['relation'])) {
+                    return $this->resolveRelationMapping($model, $hubspotProperties, $hubspotKey, $map);
+                }
+
+                return [];
+            })
+            ->filter(fn ($value) => !is_null($value))
+            ->toArray();
+    }
+
+    protected function resolveRelationMapping($model, array $hubspotProperties, string $hubspotKey, array $map): array
+    {
+        $relation = $map['relation'];
+        $lookupField = $map['lookup_field'] ?? 'name';
+        $foreignKey = $map['foreign_key'] ?? (Str::snake($relation) . '_id');
+        $notFoundAction = $map['not_found_action'] ?? 'ignore';
+
+        $relatedModel = $model->{$relation}()->getRelated();
+
+        $hubspotValue = $hubspotProperties[$hubspotKey] ?? null;
+
+        if (!$hubspotValue) {
+            return [];
         }
 
-        return $attributes;
+        $relatedInstance = $relatedModel->firstWhere($lookupField, $hubspotValue)
+            ?: ($notFoundAction === 'create'
+                ? $relatedModel->create([$lookupField => $hubspotValue])
+                : null);
+
+        return [$foreignKey => $relatedInstance?->getKey()];
     }
+
 }
