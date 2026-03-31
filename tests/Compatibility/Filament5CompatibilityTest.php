@@ -367,7 +367,7 @@ describe('Dependencies Analysis', function () {
         $composer = json_decode(file_get_contents(__DIR__.'/../../composer.json'), true);
 
         expect($composer['require'])->toHaveKey('hubspot/api-client')
-            ->and($composer['require']['filament/filament'])->toBe('^4.0');
+            ->and($composer['require']['filament/filament'])->toBe('^5.0');
     });
 
     it('has minimal composer dependencies', function () {

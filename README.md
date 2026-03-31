@@ -14,6 +14,8 @@ This package provides:
 
 This package is a **quick-start solution** for integrating **HubSpot contacts** into a **Laravel + Filament** sales pipeline.
 
+**Compatible with Filament v5.x**
+
 ---
 
 ## 🚀 Installation
