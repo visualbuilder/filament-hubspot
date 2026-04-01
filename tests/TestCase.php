@@ -13,7 +13,10 @@ use Filament\Support\SupportServiceProvider;
 use Filament\Tables\TablesServiceProvider;
 use Filament\Widgets\WidgetsServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ViewErrorBag;
 use Livewire\LivewireServiceProvider;
+use Livewire\Mechanisms\DataStore;
 use Orchestra\Testbench\TestCase as Orchestra;
 use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
 use Visualbuilder\FilamentHubspot\FilamentHubspotServiceProvider;
@@ -27,6 +30,10 @@ class TestCase extends Orchestra
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'Visualbuilder\\FilamentHubspot\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
+
+        View::share('errors', new ViewErrorBag);
+        $dataStore = app(DataStore::class);
+        app()->instance(DataStore::class, $dataStore);
     }
 
     protected function getPackageProviders($app)
