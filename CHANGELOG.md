@@ -2,6 +2,11 @@
 
 All notable changes to `filament-hubspot` will be documented in this file.
 
+## 5.1.1 - 2026-09-25
+
+### Security
+- The webhook now verifies HubSpot's `X-HubSpot-Signature-v3` HMAC. Previously any request carrying a signature header and a fresh timestamp was accepted. The signature is computed over the raw request body (re-encoding the decoded JSON changed the bytes, which is why the earlier check failed in production) and the https URL HubSpot called. Mismatches return 401 and log the signed URI.
+
 ## 2.0.0 - 2026-03-31
 
 ### Added

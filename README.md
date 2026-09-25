@@ -74,6 +74,8 @@ Testing the connection.  The HubSpot API should now be available on the HubSpot 
 
 On your app, add the events that should trigger a webhook and point to ```yourdomain.com/api/hubspot/webhook```
 
+Every request is checked against HubSpot's v3 signature using `HUBSPOT_CLIENT_SECRET` (the client secret of the app sending the webhooks). Requests with a missing or wrong signature, or older than 5 minutes, get a 401. The signature covers the https URL HubSpot called, so the host your app sees must match the one configured in HubSpot.
+
 ### Local Webhook testing 
 For local testing of webhooks use ngrok or smee to route requests to your local server
 
