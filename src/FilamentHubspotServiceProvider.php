@@ -9,6 +9,7 @@ use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Visualbuilder\FilamentHubspot\Commands\ExportMarketingCommand;
 use Visualbuilder\FilamentHubspot\Commands\FilamentHubspotCommand;
 use Visualbuilder\FilamentHubspot\Events\HubspotWebhookReceived;
 use Visualbuilder\FilamentHubspot\Http\Controllers\HubspotWebhookController;
@@ -109,6 +110,7 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
     {
         return [
             FilamentHubspotCommand::class,
+            ExportMarketingCommand::class,
         ];
     }
 

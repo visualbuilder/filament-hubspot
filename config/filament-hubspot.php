@@ -117,5 +117,25 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Marketing Export (hubspot:export-marketing)
+    |--------------------------------------------------------------------------
+    |
+    | Where the export run directories are written and which contact
+    | properties are pulled. Archived contacts are never exported.
+    |
+    */
+    'export'            => [
+        'disk'                 => env('HUBSPOT_EXPORT_DISK', 'local'),
+        'directory'            => env('HUBSPOT_EXPORT_DIRECTORY', 'hubspot-exports'),
+        'page_size'            => 100, // contacts getPage limit
+        'membership_page_size' => 250, // list memberships getPage limit
+        'contact_properties'   => [
+            'email', 'firstname', 'lastname', 'createdate', 'lastmodifieddate',
+            'lifecyclestage', 'hs_analytics_source', 'hs_legal_basis',
+            'hs_email_optout', 'hs_email_hard_bounce_reason_enum',
+        ],
+    ],
 
 ];
