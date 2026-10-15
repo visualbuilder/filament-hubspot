@@ -2,7 +2,7 @@
 
 All notable changes to `filament-hubspot` will be documented in this file.
 
-## 5.2.0 - unreleased
+## 5.2.0 - 2026-10-15
 
 ### Added
 - `hubspot:export-marketing` exports contacts, lists, list memberships, subscription preferences and spam-report events to a disk for the neurohub marketing import (NB-3138). Archived contacts are not exported; the preference export makes one API call per contact.
