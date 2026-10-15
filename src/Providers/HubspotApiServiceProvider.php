@@ -10,6 +10,8 @@ use HubSpot\Factory;
 use HubSpot\RetryMiddlewareFactory;
 use HubSpot\Delay;
 use Illuminate\Support\ServiceProvider;
+use Visualbuilder\FilamentHubspot\Contracts\MarketingExportSource;
+use Visualbuilder\FilamentHubspot\Export\SdkMarketingExportSource;
 
 class HubspotApiServiceProvider extends ServiceProvider
 {
@@ -20,6 +22,9 @@ class HubspotApiServiceProvider extends ServiceProvider
         $this->app->singleton(Discovery::class, function () {
             return $this->createHubspotClient();
         });
+
+        // Resolved lazily, so binding a fake in tests never needs credentials.
+        $this->app->bind(MarketingExportSource::class, SdkMarketingExportSource::class);
     }
 
     protected function createHubspotClient(): Discovery

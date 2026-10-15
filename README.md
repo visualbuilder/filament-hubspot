@@ -171,6 +171,45 @@ Set your model that should receive the HubSpot Contact and set which attributes 
     ],
 ```
 
+## Marketing export (`hubspot:export-marketing`)
+
+Exports everything a marketing platform needs before a HubSpot account is switched off: contacts, contact lists and their memberships, subscription types, each contact's subscription preferences, and spam-report events. The output is read by an importer in the host application (neurohub's `marketing:import-hubspot`).
+
+```bash
+php artisan hubspot:export-marketing
+php artisan hubspot:export-marketing --disk=s3_system --dir=imports/hubspot --skip-preferences
+php artisan hubspot:export-marketing --property=company --property=jobtitle
+```
+
+| Option | Purpose |
+|---|---|
+| `--disk` | Filesystem disk (default `filament-hubspot.export.disk`) |
+| `--dir` | Base directory on that disk (default `filament-hubspot.export.directory`) |
+| `--skip-preferences` | Do not call the per-email subscription status API |
+| `--skip-events` | Do not export spam-report email events |
+| `--property=*` | Extra contact properties on top of `filament-hubspot.export.contact_properties` |
+
+Each run writes a new directory `hubspot-YYYY-MM-DD-HHMMSS` under the base directory:
+
+| File | Format | Content |
+|---|---|---|
+| `subscription_definitions.json` | JSON array | Subscription types (`id`, `name`, `description`, `purpose`, `communication_method`, `is_active`, `is_internal`) |
+| `lists.json` | JSON array | Contact lists (`list_id`, `name`, `object_type_id`, `processing_type`, `created_at`, `updated_at`) |
+| `list_memberships.jsonl` | JSON lines | One row per membership (`list_id`, `record_id`, `membership_timestamp`) |
+| `contacts.jsonl` | JSON lines | One row per contact (`id`, `archived`, `created_at`, `updated_at`, `properties`) |
+| `subscription_statuses.jsonl` | JSON lines | One row per contact with an email (`contact_id`, `email`, `statuses`, `error`) |
+| `email_events.jsonl` | JSON lines | Raw `SPAMREPORT` events, when the endpoint is available |
+| `mapping.template.json` | JSON | Every list and subscription type with `"action": "skip"`, for the importer's mapping file |
+| `manifest.json` | JSON | `exported_at`, `package_version`, `contact_properties`, `counts`, `preferences`, `email_events`, `files`. Written last: a directory without it is incomplete |
+
+Things to know:
+
+- The private app needs the scopes `crm.objects.contacts.read`, `crm.lists.read`, `communication_preferences.read`, and `content` for the email events endpoint.
+- Archived (deleted) HubSpot contacts are not exported.
+- The preference export makes one API call per contact with an email. At the private-app rate limit that is roughly 10 contacts per second; run once with `--skip-preferences` to get the contact count and estimate the full run.
+- If the spam-report endpoint is unavailable for the account, `manifest.email_events` is `unavailable` and the command prints a warning. Complaints then rely on the `hs_email_optout` property.
+- Rate limiting uses the retry middleware configured under `retry`.
+
 ## Testing
 
 ```bash
