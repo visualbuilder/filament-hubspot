@@ -53,9 +53,10 @@ class MarketingExporter
         array $extraProperties = [],
         ?callable $progress = null,
     ): array {
-        $runDir = rtrim($directory, '/').'/hubspot-'.now()->format('Y-m-d-His');
+        $startedAt = now();
+        $runDir = rtrim($directory, '/').'/hubspot-'.$startedAt->format('Y-m-d-His');
         $filesystem = Storage::disk($disk);
-        $report = fn (string $message) => $progress ? $progress($message) : null;
+        $progressLine = fn (string $message) => $progress ? $progress($message) : null;
 
         $properties = array_values(array_unique([
             ...(array) config('filament-hubspot.export.contact_properties', []),
@@ -69,7 +70,7 @@ class MarketingExporter
         $definitions = $this->source->subscriptionDefinitions();
         $this->putJson($filesystem, $disk, "{$runDir}/".self::FILE_DEFINITIONS, $definitions);
         $files[] = self::FILE_DEFINITIONS;
-        $report(count($definitions).' subscription definitions');
+        $progressLine(count($definitions).' subscription definitions');
 
         // 2. Lists
         $lists = [];
@@ -79,7 +80,7 @@ class MarketingExporter
         $counts['lists'] = count($lists);
         $this->putJson($filesystem, $disk, "{$runDir}/".self::FILE_LISTS, $lists);
         $files[] = self::FILE_LISTS;
-        $report($counts['lists'].' contact lists');
+        $progressLine($counts['lists'].' contact lists');
 
         // 3. Memberships
         $counts['memberships'] = $this->writeJsonl($filesystem, $disk, "{$runDir}/".self::FILE_MEMBERSHIPS, (function () use ($lists) {
@@ -88,7 +89,7 @@ class MarketingExporter
             }
         })());
         $files[] = self::FILE_MEMBERSHIPS;
-        $report($counts['memberships'].' list memberships');
+        $progressLine($counts['memberships'].' list memberships');
 
         // 4. Contacts; remember contact_id => email for the status loop.
         $emails = [];
@@ -103,7 +104,7 @@ class MarketingExporter
             }
         })());
         $files[] = self::FILE_CONTACTS;
-        $report($counts['contacts'].' contacts');
+        $progressLine($counts['contacts'].' contacts');
 
         // 5. Subscription statuses, one API call per address.
         $preferences = 'skipped';
@@ -122,7 +123,7 @@ class MarketingExporter
             })());
             $files[] = self::FILE_STATUSES;
             $preferences = 'exported';
-            $report($counts['statuses'].' subscription statuses');
+            $progressLine($counts['statuses'].' subscription statuses');
         }
 
         // 6. Spam-report events
@@ -137,7 +138,7 @@ class MarketingExporter
                 $files[] = self::FILE_EVENTS;
                 $emailEvents = 'exported';
             }
-            $report($counts['spam_reports'].' spam reports ('.$emailEvents.')');
+            $progressLine($counts['spam_reports'].' spam reports ('.$emailEvents.')');
         }
 
         // 7. Mapping template: every list and subscription type, all "skip".
@@ -164,7 +165,7 @@ class MarketingExporter
 
         // 8. Manifest, always last.
         $manifest = [
-            'exported_at' => now()->toIso8601String(),
+            'exported_at' => $startedAt->toIso8601String(),
             'package_version' => InstalledVersions::isInstalled('visualbuilder/filament-hubspot')
                 ? InstalledVersions::getPrettyVersion('visualbuilder/filament-hubspot')
                 : null,

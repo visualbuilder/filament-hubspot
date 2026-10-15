@@ -34,6 +34,7 @@ class ExportMarketingCommand extends Command
                 progress: fn (string $message) => $this->line($message),
             );
         } catch (Throwable $e) {
+            report($e);
             $this->error('Export failed: '.$e->getMessage());
 
             return self::FAILURE;

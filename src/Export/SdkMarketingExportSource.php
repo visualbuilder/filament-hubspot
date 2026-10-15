@@ -6,6 +6,7 @@ namespace Visualbuilder\FilamentHubspot\Export;
 
 use DateTimeInterface;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use HubSpot\Client\CommunicationPreferences\ApiException as CommunicationPreferencesApiException;
 use HubSpot\Client\CommunicationPreferences\Model\PublicSubscriptionStatus;
 use HubSpot\Client\CommunicationPreferences\Model\SubscriptionDefinition;
@@ -72,8 +73,11 @@ class SdkMarketingExportSource implements MarketingExportSource
                 ];
             }
 
+            // A response that repeats its own offset with hasMore would loop forever
+            // against the rate limit, a known quirk of the legacy list endpoints.
+            $previous = $offset;
             $offset = (int) $response->getOffset();
-        } while ($response->getHasMore());
+        } while ($response->getHasMore() && $offset !== $previous);
     }
 
     public function listMemberships(string $listId): iterable
@@ -154,6 +158,12 @@ class SdkMarketingExportSource implements MarketingExportSource
             $first = $this->fetchSpamReportPage(null);
         } catch (ClientException) {
             return null;
+        } catch (ServerException $e) {
+            // Logged, then treated as unavailable: failing here would throw away the
+            // slow per-contact status loop that has already completed.
+            report($e);
+
+            return null;
         }
 
         return $this->spamReportPages($first);
@@ -165,16 +175,20 @@ class SdkMarketingExportSource implements MarketingExportSource
      */
     protected function spamReportPages(array $page): iterable
     {
+        $offset = null;
+
         while (true) {
             foreach ($page['events'] ?? [] as $event) {
                 yield $event;
             }
 
-            if (empty($page['hasMore']) || ! isset($page['offset'])) {
+            // A page that repeats the offset it was fetched with would loop forever.
+            if (empty($page['hasMore']) || ! isset($page['offset']) || $page['offset'] === $offset) {
                 return;
             }
 
-            $page = $this->fetchSpamReportPage($page['offset']);
+            $offset = $page['offset'];
+            $page = $this->fetchSpamReportPage($offset);
         }
     }
 
