@@ -13,7 +13,7 @@ class SyncHubspotContactListener
     public function handle(HubspotWebhookReceived $event): ?Model
     {
         try {
-            $response = HubSpot::crm()
+            $response = Hubspot::crm()
                 ->contacts()
                 ->basicApi()
                 ->getById($event->contactId, array_keys(config('filament-hubspot.mappings')));
@@ -23,7 +23,7 @@ class SyncHubspotContactListener
         } catch (\Throwable $e) {
             Log::error('HubSpot Sync Error', [
                 'contact_id' => $event->contactId,
-                'error'      => $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
 
             throw $e;
@@ -33,7 +33,7 @@ class SyncHubspotContactListener
     protected function syncRecord(array $hubspotProperties): ?Model
     {
 
-        if (!$this->shouldSyncRecord($hubspotProperties)) {
+        if (! $this->shouldSyncRecord($hubspotProperties)) {
             return null;
         }
 
@@ -43,8 +43,7 @@ class SyncHubspotContactListener
 
         return $localModelClass::updateOrCreate(
             [
-                config('filament-hubspot.webhook.match_on_attribute.localModel') =>
-                    $hubspotProperties[config('filament-hubspot.webhook.match_on_attribute.hubspot')],
+                config('filament-hubspot.webhook.match_on_attribute.localModel') => $hubspotProperties[config('filament-hubspot.webhook.match_on_attribute.hubspot')],
             ],
             $attributes
         );
@@ -64,7 +63,7 @@ class SyncHubspotContactListener
 
         return collect(config('filament-hubspot.mappings'))
             ->mapWithKeys(fn ($map, $hubspotKey) => $this->mapProperty($model, $hubspotProperties, $hubspotKey, $map))
-            ->filter(fn ($value) => !is_null($value))
+            ->filter(fn ($value) => ! is_null($value))
             ->toArray();
     }
 
@@ -92,7 +91,7 @@ class SyncHubspotContactListener
 
         $hubspotValue = $hubspotProperties[$hubspotKey] ?? null;
 
-        if (!$hubspotValue) {
+        if (! $hubspotValue) {
             return [];
         }
 

@@ -14,15 +14,17 @@ class HubspotWebhookController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
-        if (!$this->isValidHubspotRequest($request)) {
+        if (! $this->isValidHubspotRequest($request)) {
             Log::warning('Invalid HubSpot webhook, request rejected.');
+
             return response()->json(['status' => 'unauthorized'], 401);
         }
 
         $payload = $request->json()->all();
 
-        if (!isset($payload[0]['objectId'])) {
+        if (! isset($payload[0]['objectId'])) {
             Log::warning('HubSpot webhook payload missing objectId.');
+
             return response()->json(['status' => 'bad request'], 400);
         }
 
@@ -31,19 +33,18 @@ class HubspotWebhookController extends Controller
         return response()->json(['status' => 'success']);
     }
 
-
     protected function isValidHubspotRequest(Request $request): bool
     {
         $signatureHeader = $request->header('X-Hubspot-Signature-V3');
         $timestamp = $request->header('X-Hubspot-Request-Timestamp');
         $clientSecret = config('hubspot.client_secret');
 
-        if (!$signatureHeader || !$timestamp || !$clientSecret) {
+        if (! $signatureHeader || ! $timestamp || ! $clientSecret) {
             return false;
         }
 
         // Reject if timestamp older than 5 minutes
-        if (abs(time() * 1000 - (int)$timestamp) > 300000) {
+        if (abs(time() * 1000 - (int) $timestamp) > 300000) {
             return false;
         }
 
@@ -68,7 +69,6 @@ class HubspotWebhookController extends Controller
         //        // Timing-safe comparison
         //        return hash_equals($signatureHeader, $hashedString);
     }
-
 
     protected function hubspotDecodeUri(string $uri): string
     {

@@ -10,7 +10,6 @@ use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Visualbuilder\FilamentHubspot\Commands\FilamentHubspotCommand;
-use Visualbuilder\FilamentHubspot\Events\HubspotWebhookReceived;
 use Visualbuilder\FilamentHubspot\Http\Controllers\HubspotWebhookController;
 use Visualbuilder\FilamentHubspot\Providers\HubspotApiServiceProvider;
 use Visualbuilder\FilamentHubspot\Testing\TestsFilamentHubspot;
@@ -64,17 +63,16 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        //Init user defined listeners
+        // Init user defined listeners
         foreach (config('filament-hubspot.webhook.listeners', []) as $event => $eventListeners) {
             foreach ((array) $eventListeners as $listener) {
                 Event::listen($event, $listener);
             }
         }
 
-
         // Handle Stubs
         if (app()->runningInConsole()) {
-            foreach (app(Filesystem::class)->files(__DIR__ . '/../stubs/') as $file) {
+            foreach (app(Filesystem::class)->files(__DIR__.'/../stubs/') as $file) {
                 $this->publishes([
                     $file->getRealPath() => base_path("stubs/filament-hubspot/{$file->getFilename()}"),
                 ], 'filament-hubspot-stubs');
@@ -86,7 +84,7 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
         }
 
         // Testing
-        Testable::mixin(new TestsFilamentHubspot());
+        Testable::mixin(new TestsFilamentHubspot);
     }
 
     protected function registerWebhookRoute(): void
@@ -95,7 +93,6 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
         Route::post($slug, HubspotWebhookController::class)
             ->name('filament-hubspot.webhook');
     }
-
 
     protected function getAssetPackageName(): ?string
     {
@@ -111,7 +108,6 @@ class FilamentHubspotServiceProvider extends PackageServiceProvider
             FilamentHubspotCommand::class,
         ];
     }
-
 
     /**
      * @return array<string>

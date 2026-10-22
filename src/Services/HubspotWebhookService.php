@@ -3,9 +3,9 @@
 namespace Visualbuilder\FilamentHubspot\Services;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Visualbuilder\FilamentHubspot\Facades\HubSpot;
-use Illuminate\Support\Facades\DB;
 
 class HubspotWebhookService
 {
@@ -31,7 +31,7 @@ class HubspotWebhookService
             } catch (\Throwable $e) {
                 \Log::error('HubSpot Sync Error', [
                     'contact_id' => $contactId,
-                    'error'      => $e->getMessage(),
+                    'error' => $e->getMessage(),
                 ]);
 
                 throw $e; // Transaction will auto-rollback
@@ -55,7 +55,7 @@ class HubspotWebhookService
 
                 return [];
             })
-            ->filter(fn ($value) => !is_null($value))
+            ->filter(fn ($value) => ! is_null($value))
             ->toArray();
     }
 
@@ -63,14 +63,14 @@ class HubspotWebhookService
     {
         $relation = $map['relation'];
         $lookupField = $map['lookup_field'] ?? 'name';
-        $foreignKey = $map['foreign_key'] ?? (Str::snake($relation) . '_id');
+        $foreignKey = $map['foreign_key'] ?? (Str::snake($relation).'_id');
         $notFoundAction = $map['not_found_action'] ?? 'ignore';
 
         $relatedModel = $model->{$relation}()->getRelated();
 
         $hubspotValue = $hubspotProperties[$hubspotKey] ?? null;
 
-        if (!$hubspotValue) {
+        if (! $hubspotValue) {
             return [];
         }
 
@@ -81,5 +81,4 @@ class HubspotWebhookService
 
         return [$foreignKey => $relatedInstance?->getKey()];
     }
-
 }

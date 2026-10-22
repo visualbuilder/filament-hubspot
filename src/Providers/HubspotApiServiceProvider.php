@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Visualbuilder\FilamentHubspot\Providers;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use HubSpot\Delay;
 use HubSpot\Discovery\Discovery;
 use HubSpot\Factory;
 use HubSpot\RetryMiddlewareFactory;
-use HubSpot\Delay;
 use Illuminate\Support\ServiceProvider;
 
 class HubspotApiServiceProvider extends ServiceProvider
@@ -24,7 +25,7 @@ class HubspotApiServiceProvider extends ServiceProvider
 
     protected function createHubspotClient(): Discovery
     {
-        $handlerStack = \GuzzleHttp\HandlerStack::create();
+        $handlerStack = HandlerStack::create();
 
         $retryConfig = config('hubspot.retry');
 
@@ -39,7 +40,7 @@ class HubspotApiServiceProvider extends ServiceProvider
         if ($retryConfig['exponential_delay']) {
             $handlerStack->push(
                 RetryMiddlewareFactory::createRateLimitMiddleware(
-                    Delay::getExponentialDelayFunction((int)$retryConfig['exponential_delay'])
+                    Delay::getExponentialDelayFunction((int) $retryConfig['exponential_delay'])
                 )
             );
         }

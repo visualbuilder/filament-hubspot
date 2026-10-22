@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Lead;
+use Visualbuilder\FilamentHubspot\Events\HubspotWebhookReceived;
+use Visualbuilder\FilamentHubspot\Listeners\SyncHubspotContactListener;
 
 return [
 
@@ -11,7 +14,7 @@ return [
     | Use this for OAuth-based authentication.
     |
     */
-    'access_token'      => env('HUBSPOT_ACCESS_TOKEN'),
+    'access_token' => env('HUBSPOT_ACCESS_TOKEN'),
 
     /*
    |--------------------------------------------------------------------------
@@ -26,7 +29,7 @@ return [
     /*
      * Secret key used to validate webhook requests
      */
-    'client_secret'     => env('HUBSPOT_CLIENT_SECRET'),
+    'client_secret' => env('HUBSPOT_CLIENT_SECRET'),
 
     /*
     |--------------------------------------------------------------------------
@@ -36,8 +39,8 @@ return [
     | Configure additional options for Guzzle HTTP client.
     |
     */
-    'client_options'    => [
-        'timeout'     => 30,
+    'client_options' => [
+        'timeout' => 30,
         'http_errors' => true,
     ],
 
@@ -49,8 +52,8 @@ return [
     | Configure delays for handling HubSpot API rate limits.
     |
     */
-    'retry'             => [
-        'constant_delay'    => env('HUBSPOT_CONSTANT_DELAY', false),
+    'retry' => [
+        'constant_delay' => env('HUBSPOT_CONSTANT_DELAY', false),
         'exponential_delay' => env('HUBSPOT_EXPONENTIAL_DELAY', 2000), // milliseconds
     ],
 
@@ -62,26 +65,26 @@ return [
     |  Valid requests will trigger an event HubspotWebhookReceived
     |
     */
-    'webhook'           => [
-        'enabled'             => env('HUBSPOT_WEBHOOK_ENABLED', true),
-        'slug'                => env('HUBSPOT_WEBHOOK_SLUG', 'api/hubspot/webhook'),
+    'webhook' => [
+        'enabled' => env('HUBSPOT_WEBHOOK_ENABLED', true),
+        'slug' => env('HUBSPOT_WEBHOOK_SLUG', 'api/hubspot/webhook'),
 
         /**
          * Replace this with your own Contact Model preference
          */
-        'local_contact_model' => \App\Models\Lead::class,
-        'match_on_attribute'  => [
-            'hubspot'    => 'email',
-            'localModel' => 'email'
+        'local_contact_model' => Lead::class,
+        'match_on_attribute' => [
+            'hubspot' => 'email',
+            'localModel' => 'email',
         ],
 
         /**
          * What to do when a webhook is received
          *  Event triggers these Listeners
          */
-        'listeners'           => [
-            Visualbuilder\FilamentHubspot\Events\HubspotWebhookReceived::class => [
-                Visualbuilder\FilamentHubspot\Listeners\SyncHubspotContactListener::class,
+        'listeners' => [
+            HubspotWebhookReceived::class => [
+                SyncHubspotContactListener::class,
                 // Additional listeners can be added here...
             ],
         ],
@@ -95,27 +98,26 @@ return [
      |  These fields will be requested from hubspot, the values are the model mappings
      |
      */
-    'mappings'          => [
-        'firstname'        => ['attribute' => 'first_name'],
-        'lastname'         => ['attribute' => 'last_name'],
-        'email'            => ['attribute' => 'email'],
-        'company'          => ['attribute' => 'company'],
-        'website'          => ['attribute' => 'website'],
-        'jobtitle'         => ['attribute' => 'job_title'],
-        'message'          => ['attribute' => 'message'],
+    'mappings' => [
+        'firstname' => ['attribute' => 'first_name'],
+        'lastname' => ['attribute' => 'last_name'],
+        'email' => ['attribute' => 'email'],
+        'company' => ['attribute' => 'company'],
+        'website' => ['attribute' => 'website'],
+        'jobtitle' => ['attribute' => 'job_title'],
+        'message' => ['attribute' => 'message'],
         'lastmodifieddate' => ['attribute' => 'updated_at'],
-        'lifecyclestage'   => ['attribute' => null],
-        'hs_object_id'     => ['attribute' => 'hs_id'],
+        'lifecyclestage' => ['attribute' => null],
+        'hs_object_id' => ['attribute' => 'hs_id'],
 
         // Relations can be added and auto created if not existing
         // in this case leadsource may contain LinkedIn, Facebook etc as a string and will populate a related model if the source is not found
-        'leadsource'       => [
-            'relation'         => 'leadSource',
-            'lookup_field'     => 'name',           // the column to find or create related model
-            'foreign_key'      => 'lead_source_id', // optional, otherwise inferred automatically
+        'leadsource' => [
+            'relation' => 'leadSource',
+            'lookup_field' => 'name',           // the column to find or create related model
+            'foreign_key' => 'lead_source_id', // optional, otherwise inferred automatically
             'not_found_action' => 'create',         // use ignore or create missing lookup relation
         ],
     ],
-
 
 ];

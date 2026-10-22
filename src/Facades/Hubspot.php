@@ -2,15 +2,17 @@
 
 namespace Visualbuilder\FilamentHubspot\Facades;
 
+use HubSpot\Discovery\Discovery;
 use Illuminate\Support\Facades\Facade;
+use Visualbuilder\FilamentHubspot\FilamentHubspot;
 
 /**
- * @see \Visualbuilder\FilamentHubspot\FilamentHubspot
+ * @see FilamentHubspot
  */
 class Hubspot extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \HubSpot\Discovery\Discovery::class;
+        return Discovery::class;
     }
 }
